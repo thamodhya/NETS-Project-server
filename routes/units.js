@@ -25,10 +25,10 @@ todoRoutes.route('/add').post(function(req, res) {
     let todo = new Todo(req.body);
     todo.save()
         .then(todo => {
-            res.status(200).json({'todo': 'todo added successfully'});
+            res.status(200).json({'unit': 'unit added successfully'});
         })
         .catch(err => {
-            res.status(400).send('adding new todo failed');
+            res.status(400).send('adding new unit failed');
         });
 });
 
@@ -41,7 +41,7 @@ todoRoutes.route('/update/:id').post(function(req, res) {
             todo.unit_intro = req.body.unit_intro;
              
             todo.save().then(todo => {
-                res.status(200).json({'todo': 'todo updated successfully'});
+                res.status(200).json({'unit': 'unit updated successfully'});
             })
             .catch(err => {
                 res.status(400).send("Update not possible");
@@ -51,6 +51,30 @@ todoRoutes.route('/update/:id').post(function(req, res) {
     
 });
 
+// todoRoutes.route('/update/:id').post(function(req, res) {
+//   Todo.findById(req.params.id, function(err, todo) {
+//       if (!todo) {
+//           res.status(404).send('data is not found');
+//       } else {
+//           const oldData = {
+//             unit_name: todo.unit_name,
+//             unit_intro: todo.unit_intro
+//           };
+          
+//           todo.unit_name = req.body.unit_name;
+//           todo.unit_intro = req.body.unit_intro;
+//           todo.old_data = oldData;
+           
+//           todo.save().then(todo => {
+//               res.status(200).json({'unit': 'unit updated successfully'});
+//           })
+//           .catch(err => {
+//               res.status(400).send("Update not possible");
+//           });
+//       }
+//   });
+// });
+
 
 todoRoutes.route('/delete/:id').delete((req, res, next) => {
     Todo.findByIdAndRemove(req.params.id, (error, data) => {
@@ -58,7 +82,7 @@ todoRoutes.route('/delete/:id').delete((req, res, next) => {
         return next(error)
       } else {
         res.status(200).json({
-            'todo': 'todo deleted successfully'
+            'unit': 'unit deleted successfully'
         })
       }
     })
@@ -70,14 +94,16 @@ todoRoutes.route('/delete/:id').delete((req, res, next) => {
             res.status(404).send('data is not found');
         } else {
             todo.quiz.quizName = req.body.quizName;
-            todo.quiz.quizDesc = req.body.quizDesc;
+            todo.quiz.quizDesc = req.body.quizDesc;  
+            todo.quiz.timeLimit = req.body.timeLimit;
              
             todo.save().then(todo => {
-                res.status(200).json({'todo': 'todo updated successfully'});
+                res.status(200).json({'Quiz': 'Quiz updated successfully'});
             })
             .catch(err => {
                 res.status(400).send("Update not possible");
             });
+             
         }
     });
   });
@@ -91,6 +117,8 @@ todoRoutes.route('/delete/:id').delete((req, res, next) => {
     }
   });
 
+  
+    
   todoRoutes.post('/:id/quiz', async (req, res) => {
     try {
       const unit = await Todo.findById(req.params.id);
@@ -98,15 +126,13 @@ todoRoutes.route('/delete/:id').delete((req, res, next) => {
         return res.status(404).json({ message: 'Unit not found' });
       }
   
-      const newQuiz = {
+      const newQuestion = {
         question: req.body.question,
-        op1: req.body.op1,
-        op2: req.body.op2,
-        op3: req.body.op3,
-        op4: req.body.op4,
+        options: req.body.options,
+        correctAnswer: req.body.correctAnswer
       };
        
-      unit.quiz.questions.push(newQuiz);
+      unit.quiz.questions.push(newQuestion);
   
       const updatedUnit = await unit.save();
   
@@ -116,57 +142,45 @@ todoRoutes.route('/delete/:id').delete((req, res, next) => {
       res.status(500).json({ message: 'Server error' });
     }
   });
-    
-  todoRoutes.route('/q/update/:id').post(function(req, res) {
-    const unitId = req.params.id;
-    const questionId = req.body.questionId;
-  
-    Todo.findById(unitId, function(err, unit) {
-      if (!unit) {
-        res.status(404).send('Unit not found');
-      } else {
-        const questionIndex = unit.quiz.questions.findIndex(q => q._id == questionId);
-        if (questionIndex === -1) {
-          res.status(404).send('Question not found');
-        } else {
-          const question = unit.quiz.questions[questionIndex].unitId;
-          question.question = req.body.question;
-          question.op1 = req.body.op1;
-          question.op2 = req.body.op2;
-          question.op3 = req.body.op3;
-          question.op4 = req.body.op4;
-  
-          unit.save().then(() => {
-            res.status(200).json({'message': 'Question updated successfully'});
-          }).catch(err => {
-            res.status(400).send("Update not possible");
-          });
-        }
-      }
-    });
-  });
-  
-//   todoRoutes.route('/q/update/:id').post(function(req, res) {
-//     Todo.quiz.questions.findById(req.params.id, function(err, todo) {
-//         if (!todo) {
-//             res.status(404).send('data is not found');
-//         } else {
-//             todo.question = req.body.question;
-//             todo.op1 = req.body.op1;
-//             todo.op2 = req.body.op2;
-//             todo.op3 = req.body.op3;
-//             todo.op4 = req.body.op4;
-             
-//             todo.save().then(todo => {
-//                 res.status(200).json({'todo': 'todo updated successfully'});
-//             })
-//             .catch(err => {
-//                 res.status(400).send("Update not possible");
-//             });
-//         }
-//     });
-    
-// });
 
-   
+todoRoutes.delete('/:unitId/delete/:id', async (req, res) => {
+  const { unitId, id } = req.params;
+
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      unitId,
+      { $pull: { "quiz.questions": { _id: id } } },
+      { new: true }
+    );
+    res.status(200).json(updatedTodo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+todoRoutes.put('/:id/update/:questionId', (req, res, next) => {
+  const id = req.params.id;
+  const questionId = req.params.questionId;
+  Todo.findById(id, (err, todo) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const question = todo.quiz.questions.id(questionId);
+      question.question = req.body.question;
+      question.options = req.body.options;
+      question.correctAnswer = req.body.correctAnswer;
+      todo.save()
+        .then(todo => {
+          res.status(200).json({'Questions': 'Question updated successfully'});
+        })
+        .catch(err => {
+          res.status(400).send('Update not possible');
+        });
+    }
+  });
+});   
+
 module.exports = todoRoutes;
+
+ 
