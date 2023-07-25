@@ -1,21 +1,28 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const User = new mongoose.Schema(
-    {
-        firstName: { type: String, required: true },
-        lastName: { type: String, required: true },
-        gender: { type: String, required: true },
-        dob: { type: String, required: true },
-        phoneNumber: { type: String, required: true },
-        emailAddress: { type: String, required: true, unique: true},
-        department: { type: String, required: true },
-        jobPosition: { type: String, required: true },
-        verified: { type: String,  default:"false"},
-        userStatus: { type: String,  default:"active" },
-        SubmittedOn: { type: String,  default:Date.now},
-    },
-    {
-        collection: "users"
-    }
-)
-const model = mongoose.model('UserData', User);
+  {
+    userRoleId: { type: mongoose.Schema.Types.ObjectId, ref: "UserRoleData" },
+    empId: { type: String, default: "001A" },
+    firstName: { type: String  },
+    lastName: { type: String  },
+    gender: { type: String  },
+    dob: { type: Date  },
+    phoneNumber: { type: Number  },
+    SubmittedOn: { type: String, default: Date.now },//Date
+    emailAddress: { type: String , unique: true },
+    verified: { type: String, default: "false" },
+    userStatus: { type: String, default: "active" },
+    department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
+    jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
+    // jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "JobtitleData", },//DepartmentData
+    badges: [{ badgeValue: { type: String }, earnedOn: { type: Date }, },],
+    earnedScoresByQuiz: { numOfQuizzesDone: { type: Number }, totalScoresEarned: { type: Number }, },
+    notification: [{ type: String}],
+  },
+  {
+    collection: "users",
+  }
+);
+
+const model = mongoose.model("UserData", User);
 module.exports = model;

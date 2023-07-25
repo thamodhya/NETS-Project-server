@@ -1,13 +1,16 @@
 const mongoose = require("mongoose");
-const Article = new mongoose.Schema(
+
+const KtSession = new mongoose.Schema(
   {
+    belongsToUnit: { type: mongoose.Schema.Types.ObjectId, ref: "UnitData" },
+    //belongsToUnit: { type: String },
     belongsToChapter: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ChapterData",
     },
-    articleName: { type: String },
-    articleDesc: { type: String },
-    articleUrl: {type: String},
+    sessionName: { type: String },
+    sessionDesc: { type: String },
+    sessionUrl: {type: String},
     createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     createdOn: { type: Date, default: Date.now },
     overallRating: { type: Number },
@@ -18,10 +21,9 @@ const Article = new mongoose.Schema(
      
   },
   {
-    collection: "articles",
+    collection: "ktsessions",
   }
 );
- 
 
-const ArticleData = mongoose.models.ArticleData || mongoose.model('ArticleData', Article);
-module.exports = ArticleData;
+const model = mongoose.model("KtSessionData", KtSession);
+module.exports = model;

@@ -3,6 +3,12 @@ const mongoose = require("mongoose");
 
 const EditQuestion = new mongoose.Schema(
   {
+    unitName:{
+      type: String,
+    },
+    quizname:{
+      type: String,
+    },
     question: {
     type: String,
     required: true
@@ -17,9 +23,10 @@ const EditQuestion = new mongoose.Schema(
     type: Number,
     required: true
   },
+  
   updated_at: {
-    type: Date,
-    default: Date.now
+    type: String,
+     
   },
   old_data: {
     question: String,

@@ -1,7 +1,6 @@
-
 const mongoose = require("mongoose");
 
-const EditArticle = new mongoose.Schema(
+const deleteArticle = new mongoose.Schema(
   {
     chapterName: { 
       type: String, 
@@ -15,22 +14,17 @@ const EditArticle = new mongoose.Schema(
     type: String,
     required: true
   },
-   
+  createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+  deletedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
   updated_at: {
     type: String,
      
   },
-  old_data: {
-    articleName: String,
-    articleDesc: String,
-     
-  },
-  updatedby:{type: String},
 },
   {
-    collection: "editarticles",
+    collection: "deletearticles",
   }
 );
 
-const model = mongoose.model("EditArticleData", EditArticle);
+const model = mongoose.model("deleteArticleData", deleteArticle);
 module.exports = model;

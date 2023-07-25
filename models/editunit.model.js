@@ -3,21 +3,22 @@ const mongoose = require("mongoose");
 
 const EditUnit = new mongoose.Schema(
   {
-  unit_name: {
+    unitName: {
     type: String,
     required: true
   },
-  unit_intro: {
+  unitDesc: {
     type: String,
     required: true
   },
+ 
   updated_at: {
-    type: Date,
-    default: Date.now
+    type: String,
+     
   },
   old_data: {
-    unit_name: String,
-    unit_intro: String,
+    unitName: String,
+    unitDesc: String,
      
   },
   updatedby:{type: String},

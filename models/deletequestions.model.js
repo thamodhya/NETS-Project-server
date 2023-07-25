@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const EditQuestion = new mongoose.Schema(
+const deleteQuestion = new mongoose.Schema(
   {
     unitName:{
       type: String,
@@ -22,22 +22,17 @@ const EditQuestion = new mongoose.Schema(
     type: Number,
     required: true
   },
-  
+  createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+  deletedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
   updated_at: {
     type: String,
      
   },
-  old_data: {
-    question: String,
-    options: [String],
-    correctAnswer: Number,
-  },
-  updatedby:{type: String},
 },
   {
-    collection: "editquestions",
+    collection: "deletequestions",
   }
 );
 
-const model = mongoose.model("EditQuestionData", EditQuestion);
+const model = mongoose.model("deleteQuestionData", deleteQuestion);
 module.exports = model;

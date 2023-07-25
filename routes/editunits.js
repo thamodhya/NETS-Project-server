@@ -1,4 +1,5 @@
 const express = require("express");
+const moment = require('moment');
 const editunitRoutes = express.Router();
 const EditUnitData = require('../models/editunit.model');
 
@@ -14,6 +15,8 @@ editunitRoutes.route('/').get(function(req, res) {
   
 editunitRoutes.route('/add').post(function(req, res) {
     let editunit = new EditUnitData(req.body);
+     // Format the updated_at date
+     editunit.updated_at = moment().format('YYYY-MM-DD hh:mm:ss.SS A');
     editunit.save()
         .then(editunit => {
             res.status(200).json({'unit': 'unit history added successfully'});
